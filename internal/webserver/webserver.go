@@ -3,8 +3,10 @@ package webserver
 import (
 	"log"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/qschwagle/potential-octo-giggle/internal/application"
 	"github.com/google/uuid"
+
 )
 
 
@@ -14,6 +16,8 @@ type WebServer struct {
 }
 
 func (web *WebServer) Setup(app application.IApplication) {
+
+	web.Server.Use(logger.New())
 
 	// USER ENDPOINT
 
