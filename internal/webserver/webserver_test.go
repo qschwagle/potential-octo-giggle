@@ -133,3 +133,44 @@ func TestUserDelete(t* testing.T) {
 	assert.Equalf(t, 200, resp.StatusCode, "Expected 200 Status Code")
 	assert.Equal(t, "Hello, World", text)
 }
+
+func TestLogin(t* testing.T) {
+
+	web, app := setupMockWebApp()
+
+	app.Run()
+
+	payload := &struct {
+		Email string `json:"email"`
+		Password string `json:"password"`
+	}{
+		Email: "mary@example.com",
+		Password: "password",
+	}
+
+	payloadJson, _ := json.Marshal(payload)
+
+	payloadReader := bytes.NewReader(payloadJson)
+
+	req := httptest.NewRequest("POST", "/api/login", payloadReader)
+
+	req.Header.Add("content-type", "application/json")
+
+	resp, _ := web.Server.Test(req, 1)
+
+	assert.Equal(t, 201, resp.StatusCode, "Expected 201")
+	authKey := "5fb1c05c-7fdd-4719-bbda-a91298c31a39"
+
+	respCookies := resp.Cookies()
+
+	found := false
+
+	for _, cookie := range respCookies {
+		if cookie.Name == "auth_key" {
+			assert.Equal(t, authKey, cookie.Value, "TestLogin: AuthKey not equal to expected")
+			found = true
+		}
+	}
+
+	assert.Equal(t, true, found, "TestLogin: Could not find expected AuthKey")
+}

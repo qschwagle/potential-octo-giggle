@@ -19,6 +19,42 @@ func (web *WebServer) Setup(app application.IApplication) {
 
 	web.Server.Use(logger.New())
 
+	web.Server.Post("/api/login", func (c *fiber.Ctx) error {
+
+		payload := struct {
+			Email string `json:"email"`
+			Password string `json:"password"`
+		}{ }
+
+		if err := c.BodyParser(&payload); err != nil {
+			return c.SendStatus(400)
+		}
+
+		id, err := app.Login(payload.Email, payload.Password)
+
+		if err != nil {
+			return c.SendStatus(500)
+		}
+
+		if id == nil {
+			return c.SendStatus(401)
+		}
+
+		cookie := new(fiber.Cookie)
+
+		cookie.Name = "auth_key"
+		cookie.Value = id.String()
+
+		c.Cookie(cookie)
+
+		return c.SendStatus(201)
+	})
+
+	web.Server.Delete("/api/logout", func (c *fiber.Ctx) error {
+		return c.SendString("Hello, World")
+	})
+
+
 	// USER ENDPOINT
 
 	web.Server.Get("/api/user/:id", func (c *fiber.Ctx) error {

@@ -42,7 +42,8 @@ type IApplication interface {
 	Setup()
 
 	GetUser(id uuid.UUID) (*User, error)
-	CreateUser(username string, password string, email string) (*uuid.UUID , error)
+	CreateUser(username string, password string, email string) (*uuid.UUID, error)
+	Login(email string, password string) (*uuid.UUID, error)
 }
 
 type Application struct {
@@ -73,6 +74,10 @@ func (app *Application) GetUser(id uuid.UUID) (*User, error) {
 }
 
 func (app *Application) CreateUser(username string, password string, email string) (*uuid.UUID, error) {
+	return nil, &AppError { Msg: "NOT IMPLEMENTED", Type: NotImplemented }
+}
+
+func (app *Application) Login(email string, password string) (*uuid.UUID, error) {
 	return nil, &AppError { Msg: "NOT IMPLEMENTED", Type: NotImplemented }
 }
 
