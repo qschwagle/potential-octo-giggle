@@ -173,4 +173,27 @@ func TestLogin(t* testing.T) {
 	}
 
 	assert.Equal(t, true, found, "TestLogin: Could not find expected AuthKey")
+
+	req = httptest.NewRequest("POST", "/api/login", nil)
+
+	resp, _ = web.Server.Test(req, 1)
+
+	assert.Equal(t, 400, resp.StatusCode, "Expected 400")
+
+	payload.Email = "carol@example.com"
+	payload.Password = "password"
+
+	payloadJson, _ = json.Marshal(payload)
+
+	payloadReader = bytes.NewReader(payloadJson)
+
+	req = httptest.NewRequest("POST", "/api/login", payloadReader)
+
+	req.Header.Add("content-type", "application/json")
+
+	resp, _ = web.Server.Test(req, 1)
+
+	assert.Equal(t, 401, resp.StatusCode, "Expected 401")
+
+
 }
